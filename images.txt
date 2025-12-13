@@ -12,3 +12,7 @@ nginx:1.21-alpine
 nginx:alpine
 redis
 hello-world
+python:alpine
+python
+wordpress:5
+mariadb:10
