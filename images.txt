@@ -16,3 +16,4 @@ python:alpine
 python
 wordpress:5
 mariadb:10
+busybox
