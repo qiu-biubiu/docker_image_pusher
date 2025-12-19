@@ -1,0 +1,27 @@
+nginx
+#支持私库
+k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.0.0
+xhofe/alist:latest
+#支持指定架构
+--platform=linux/arm64 xiaoyaliu/alist
+alpine:3.15
+alpine
+ubuntu:jammy
+ubuntu
+nginx:1.21-alpine
+nginx:alpine
+redis
+hello-world
+python:alpine
+python
+wordpress:5
+mariadb:10
+busybox
+
+kube-apiserver:v1.28.2
+kube-controller-manager:v1.28.2
+kube-scheduler:v1.28.2
+kube-proxy:v1.28.2
+pause:3.9
+etcd:3.5.9-0
+coredns:v1.10.1
