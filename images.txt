@@ -17,3 +17,11 @@ python
 wordpress:5
 mariadb:10
 busybox
+
+kube-apiserver:v1.28.2
+kube-controller-manager:v1.28.2
+kube-scheduler:v1.28.2
+kube-proxy:v1.28.2
+pause:3.9
+etcd:3.5.9-0
+coredns:v1.10.1
