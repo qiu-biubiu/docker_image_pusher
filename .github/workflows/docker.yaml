@@ -98,7 +98,29 @@ jobs:
             fi       
         done < images.txt
         
-        
+        # 定义重试函数
+        function retry_command {
+            local retries=3
+            local wait_time=5
+            local count=0
+            until "$@"; do
+                exit_code=$?
+                count=$((count + 1))
+                if [ $count -lt $retries ]; then
+                    echo "Command failed with exit code $exit_code. Retrying in $wait_time seconds... ($count/$retries)"
+                    sleep $wait_time
+                else
+                    echo "Command failed after $retries attempts."
+                    return $exit_code
+                fi
+            done
+            return 0
+        }
+
+        # 定义结果统计数组
+        declare -a success_list
+        declare -a fail_list
+
         while IFS= read -r line || [ -n "$line" ]; do
             # 忽略空行与注释
             [[ -z "$line" ]] && continue
@@ -106,8 +128,15 @@ jobs:
                 continue
             fi
         
-            echo "docker pull $line"
-            docker pull $line
+            echo "Processing: $line"
+            
+            # 尝试拉取，如果失败记录并继续
+            if ! retry_command docker pull "$line"; then
+                echo "Failed to pull $line"
+                fail_list+=("$line (Pull failed)")
+                continue
+            fi
+
             platform=$(echo "$line" | awk -F'--platform[ =]' '{if (NF>1) print $2}' | awk '{print $1}')
             echo "platform is $platform"
             # 如果存在架构信息 将架构信息拼到镜像名称前面
@@ -139,19 +168,47 @@ jobs:
             # 将@sha256:等字符删除
             image_name_tag="${image_name_tag%%@*}"
             new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/$platform_prefix$name_space_prefix$image_name_tag"
+            
             echo "docker tag $image $new_image"
-            docker tag $image $new_image
+            docker tag "$image" "$new_image"
+            
             echo "docker push $new_image"
-            docker push $new_image
+            if ! retry_command docker push "$new_image"; then
+                echo "Failed to push $new_image"
+                fail_list+=("$line (Push failed)")
+            else
+                success_list+=("$line")
+            fi
+            
             echo "开始清理磁盘空间"
             echo "=============================================================================="
             df -hT
             echo "=============================================================================="
-            docker rmi $image
-            docker rmi $new_image
+            docker rmi "$image" || true
+            docker rmi "$new_image" || true
             echo "磁盘空间清理完毕"
             echo "=============================================================================="
             df -hT
             echo "=============================================================================="     
             
         done < images.txt
+
+        # 输出汇总报告
+        echo "=============================================================================="
+        echo "                              MIGRATION SUMMARY"
+        echo "=============================================================================="
+        echo "Total Success: ${#success_list[@]}"
+        for item in "${success_list[@]}"; do
+            echo "  [OK] $item"
+        done
+        echo ""
+        echo "Total Failed: ${#fail_list[@]}"
+        for item in "${fail_list[@]}"; do
+            echo "  [FAIL] $item"
+        done
+        echo "=============================================================================="
+        
+        # 如果有失败任务，退出码设为1，标记Workflow为失败
+        if [ ${#fail_list[@]} -gt 0 ]; then
+            exit 1
+        fi
