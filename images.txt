@@ -1,1 +1,43 @@
-redis:5-alpine
+# === 2024-07-08 Batch ===
+# nginx
+# 支持私库
+# k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.0.0
+# xhofe/alist:latest
+# 支持指定架构
+# --platform=linux/arm64 xiaoyaliu/alist
+
+# === 2025-12-12 Batch ===
+# alpine:3.15
+# alpine
+# ubuntu:jammy
+# ubuntu
+# nginx:1.21-alpine
+# nginx:alpine
+# redis
+# hello-world
+
+# === 2025-12-13 Batch ===
+# python:alpine
+# python
+# wordpress:5
+# mariadb:10
+
+# === 2025-12-16 Batch ===
+# busybox
+
+# === 2025-12-19 Batch ===
+# k8s.gcr.io/kube-apiserver:v1.23.3
+# k8s.gcr.io/kube-controller-manager:v1.23.3
+# k8s.gcr.io/kube-scheduler:v1.23.3
+# k8s.gcr.io/kube-proxy:v1.23.3
+# k8s.gcr.io/pause:3.6
+# k8s.gcr.io/etcd:3.5.1-0
+# k8s.gcr.io/coredns/coredns:v1.8.6
+
+# === 2025-12-21 Batch ===
+# docker.io/flannel/flannel:v0.27.4
+# docker.io/flannel/flannel-cni-plugin:v1.8.0-flannel1
+
+# === 2025-12-24 Batch ===
+# redis:5-alpine
+redis:7.0
